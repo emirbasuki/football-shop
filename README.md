@@ -67,7 +67,7 @@ urlpatterns = [
 - git push pws master
 
 Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
-Client(Browser) Request(HTTP GET/POST) -> urls.py (menentukan URL menuju fungsi/class di views.py) -> views.py (logika bisnis) -> models.py (interaksi dengan database (ORM)) -> views.py (hasil data dikirim ke template) -> templates(HTML) (render halaman dengan data) -> Client(Browser) Response(HTML)
+https://www.figma.com/board/8xd2zUckc1s3iUwFduzYOG/Untitled?node-id=0-1&t=vVIFJc0niQTHtyrx-1
 
 Jelaskan peran settings.py dalam proyek Django!
 settings.py berperan sebagai pusat konfigurasi yang mengatur seluruh perilaku proyek Django seperti database, installed apps, middleware, template & static files path, dan konfigurasi keamanan
