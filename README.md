@@ -1,3 +1,4 @@
+**Tugas 2**
 Membuat sebuah README.md yang berisi tautan menuju aplikasi PWS yang sudah di-deploy, serta jawaban dari beberapa pertanyaan berikut.
 https://pbp.cs.ui.ac.id/emir.fadhil41/footballshop
 
@@ -81,3 +82,72 @@ Sudah menyediakan banyak fitur bawaan (ORM, auth, admin, panel, dll). Konsep MVC
 
 Apakah ada feedback untuk asisten dosen tutorial 1 yang telah kamu kerjakan sebelumnya?
 untuk tutorial mudah dipahami dan diikuti sehingga tidak ada masalah.
+
+
+**Tugas 3**
+1. **Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?**
+Data delivery diperlukan karena:
+- Memungkinkan pertukaran informasi antara client dan server
+- Mendukung integrasi antar sistem yang berbeda
+- Memfasilitasi komunikasi asynchronous
+- Memungkinkan format data yang fleksibel (JSON, XML, dll)
+- Mendukung skalabilitas platform dengan memisahkan frontend dan backend
+
+2. **Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?**
+- Sintaks lebih sederhana - JSON menggunakan format key-value yang mudah dibaca
+- Ukuran file lebih kecil - Tidak memerlukan closing tags seperti XML
+- Parsing lebih cepat - Struktur data yang lebih sederhana
+- Native JavaScript support - JSON adalah subset dari JavaScript
+- Mudah dikonversi - Dapat dengan mudah diubah ke object pada berbagai bahasa pemrograman
+
+3. **Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?**
+is_valid() berfungsi untuk:
+- Memvalidasi data yang diinput user sesuai dengan rules yang didefinisikan
+- Mencegah data invalid masuk ke database
+- Memberikan feedback ke user jika ada kesalahan input
+- Mengkonversi data input ke format yang sesuai dengan model
+
+4. **Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?**
+CSRF token diperlukan karena:
+- Mencegah Cross-Site Request Forgery (CSRF) attacks
+- Memastikan form berasal dari sumber yang legitimate
+- Melindungi user dari aksi yang tidak diinginkan
+Tanpa CSRF token:
+- Penyerang bisa membuat form palsu yang meniru form asli
+- Bisa mengeksploitasi session user yang sedang login
+- Dapat melakukan aksi tanpa sepengetahuan user (seperti transfer dana, mengubah password)
+Contoh eksploitasi:
+- User login ke website bank
+- Penyerang mengirim link berbahaya
+- User mengklik link tersebut
+- Form palsu mengirim request transfer tanpa sepengetahuan user
+
+5. **Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).**
+- Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.
+menambahkan fungsi show_xml, show_json, show_xml_by_id, dan show_json_by_id pada main/views.py
+
+Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 1.
+pada main/urls.py, tambahkan from main.views import show_xml, show_json, show_xml_by_id, show_json_by_id
+dan tambahkan path pada urlpatterns
+...
+path('xml/', show_xml, name='show_xml'),
+path('json/', show_json, name='show_json'),
+path('xml/<str:product_id>/', show_xml_by_id, name='show_xml_by_id'),
+path('json/<str:product_id>/', show_json_by_id, name='show_json_by_id'),
+...
+
+- Membuat halaman yang menampilkan data objek model yang memiliki tombol "Add" yang akan redirect ke halaman form, serta tombol "Detail" pada setiap data objek model yang akan menampilkan halaman detail objek.
+membuat html create product pada main/templates/create_product.html untuk add product dan detail pada main/templates/main.html yang akan diarahkan ke product_detail.html 
+
+
+- Membuat halaman form untuk menambahkan objek model pada app sebelumnya.
+menambahkan field yang ingin ditambahkan pada main/forms.py
+fields = ["name", "price", "description", "thumbnail", "category", "is_featured", "stock", "brand", "size"]
+
+- Membuat halaman yang menampilkan detail dari setiap data objek model.
+membuat product-details pada main/product_detail.html untuk menampilkan info pada halaman web
+
+6. **Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan?**
+sudah lengkap informasinya
+
+7. **Mengakses keempat URL di poin 2 menggunakan Postman, membuat screenshot dari hasil akses URL pada Postman, dan menambahkannya ke dalam README.md.**
