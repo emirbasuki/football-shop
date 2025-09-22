@@ -1,4 +1,4 @@
-**Tugas 2**
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f5833be1-57e4-4692-870a-99f4b2564208" />**Tugas 2**
 Membuat sebuah README.md yang berisi tautan menuju aplikasi PWS yang sudah di-deploy, serta jawaban dari beberapa pertanyaan berikut.
 https://pbp.cs.ui.ac.id/emir.fadhil41/footballshop
 
@@ -151,6 +151,11 @@ membuat product-details pada main/product_detail.html untuk menampilkan info pad
 sudah lengkap informasinya
 
 7. **Mengakses keempat URL di poin 2 menggunakan Postman, membuat screenshot dari hasil akses URL pada Postman, dan menambahkannya ke dalam README.md.**
+<img width="1920" height="1080" alt="Screenshot (55)" src="https://github.com/user-attachments/assets/38d6cbf8-df69-4ea8-996a-afe43faeaa44" />
+<img width="1920" height="1080" alt="Screenshot (56)" src="https://github.com/user-attachments/assets/742733cc-c4f5-4cda-95ff-ab03f197e6cb" />
+<img width="1920" height="1080" alt="Screenshot (57)" src="https://github.com/user-attachments/assets/0f03efe9-f428-47ff-88c1-ed977691db31" />
+<img width="1920" height="1080" alt="Screenshot (58)" src="https://github.com/user-attachments/assets/deb7b62e-2c27-4249-8b41-b1f65e0e6eee" />
+
 
 
 **Tugas 4**
@@ -301,3 +306,7 @@ sudah lengkap informasinya
     - Session Framework → menyimpan data sensitif di server, bukan langsung di cookie client.
 
 6. **Melakukan add-commit-push ke GitHub.**
+    git add .
+    git commit -m "Tugas 4"
+    git push origin master 
+    git push pws master
