@@ -1,33 +1,97 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load humanize %}  {# untuk format harga #}
+
+{% block meta %}
+<title>{{ product.name }} - Run Station</title>
+{% endblock meta %}
+
 {% block content %}
-<div class="product-detail">
-    <p><a href="{% url 'main:show_main' %}"><button>← Back to Product List</button></a></p>
+<div class="bg-gray-50 w-full min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Back Navigation -->
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="text-[#1E3A8A] hover:text-[#4ADE80] font-medium transition-colors">
+                ← Back to Products
+            </a>
+        </div>
+        
+        <!-- Product Detail -->
+        <article class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            
+            <!-- Header -->
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-[#4ADE80] text-white">
+                        {{ product.get_category_display }}
+                    </span>
+                    {% if product.is_featured %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured
+                        </span>
+                    {% endif %}
+                    {% if product.is_product_hot %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-red-100 text-red-800">
+                            Hot
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Product Name -->
+                <h1 class="text-3xl sm:text-4xl font-bold text-[#1E3A8A] leading-tight mb-3">
+                    {{ product.name }}
+                </h1>
 
-    <h1>{{ product.name }}</h1>
+                <!-- Price -->
+                <p class="text-2xl font-bold text-[#4ADE80] mb-2">
+                    Rp {{ product.price|intcomma }}
+                </p>
 
-    <div class="product-info">
-        {% if product.thumbnail %}
-        <img src="{{ product.thumbnail }}" alt="{{ product.name }}" width="300">
-        <br /><br />
-        {% endif %}
+                <!-- Brand & Meta -->
+                <div class="flex flex-wrap items-center text-sm text-[#6B7280] gap-4">
+                    <span>Brand: <span class="font-medium text-gray-900">{{ product.brand }}</span></span>
+                    <span>Added: 
+                        <time datetime="{{ product.created_at|date:'c' }}">
+                            {{ product.created_at|date:"M j, Y g:i A" }}
+                        </time>
+                    </span>
+                    <span>{{ product.product_views }} views</span>
+                </div>
+            </div>
 
-        <div class="product-details">
-            <p><strong>Price:</strong> Rp{{ product.price }}</p>
-            <p><strong>Brand:</strong> {{ product.brand }}</p>
-            <p><strong>Size:</strong> {{ product.size }}</p>
-            <p><strong>Category:</strong> {{ product.category }}</p>
-            <p><strong>Stock:</strong> {{ product.stock }}</p>
-            <p><strong>Views:</strong> {{ product.product_views }}</p>
-
-            {% if product.is_featured %}
-            <p><span class="badge">Featured Product</span></p>
+            <!-- Featured Image -->
+            {% if product.thumbnail %}
+                <div class="px-6 sm:px-8 mb-6">
+                    <img src="{{ product.thumbnail }}" 
+                         alt="{{ product.name }}" 
+                         class="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-lg">
+                </div>
             {% endif %}
-        </div>
 
-        <div class="product-description">
-            <h3>Description</h3>
-            <p>{{ product.description }}</p>
-        </div>
+            <!-- Description -->
+            <div class="px-6 sm:px-8 pb-8">
+                <div class="text-[#374151] leading-relaxed whitespace-pre-line text-base sm:text-lg">
+                    {{ product.description }}
+                </div>
+            </div>
+
+            <!-- Author Info -->
+            <div class="border-t border-gray-200 p-6 sm:p-8 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium text-[#1E3A8A]">
+                            {% if product.user %}
+                                Author: {{ product.user.username }}
+                            {% else %}
+                                Author: Anonymous
+                            {% endif %}
+                        </p>
+                        <p class="text-sm text-[#6B7280]">Product Owner</p>
+                    </div>
+                </div>
+            </div>
+        </article>
     </div>
 </div>
 {% endblock content %}

@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f5833be1-57e4-4692-870a-99f4b2564208" />**Tugas 2**
+**Tugas 2**
 Membuat sebuah README.md yang berisi tautan menuju aplikasi PWS yang sudah di-deploy, serta jawaban dari beberapa pertanyaan berikut.
 https://pbp.cs.ui.ac.id/emir.fadhil41/footballshop
 
@@ -310,3 +310,111 @@ sudah lengkap informasinya
     git commit -m "Tugas 4"
     git push origin master 
     git push pws master
+
+
+**Tugas 5**
+Pada tugas ini, kamu akan mengimplementasikan desain web berdasarkan beberapa hal yang sudah kamu pelajari selama tutorial (CSS, Framework, dsb).
+
+Checklist untuk tugas ini adalah sebagai berikut:
+
+1. **Implementasikan fungsi untuk menghapus dan mengedit product.**
+    tambah fungsi edit_product dan delete_product di views.py dan tambahkan import dan path di urls.py
+
+    buat berkas HTML baru : edit_product.html dan delete_product.html di subdirektori main/templates
+
+    pada main/templates/main.html tambahkan edit dan delete
+
+2. **Kustomisasi desain pada template HTML yang telah dibuat pada tugas-tugas sebelumnya menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma) dengan ketentuan sebagai berikut:**
+    1. Kustomisasi halaman login, register, tambah product, edit product, dan detail product semenarik mungkin.
+        tambahkan tailwindcss di templates/base.html
+
+        konfigurasi static files pada aplikasi 
+        tambahkan pada settings.py
+        pada bagian MIDDLEWARE (dibawah SecurityMiddleware): 'whitenoise.middleware.WhiteNoiseMiddleware',
+
+        variabel STATIC_ROOT, STATICFILES_DIRS, dan STATIC_URL dikonfigurasikan
+        if DEBUG:
+            STATICFILES_DIRS = [
+                BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+            ]
+        else:
+            STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+
+        styling dengan Tailwind dan External CSS
+        menambahkan static/css/global.css
+
+        menghubungkan global.css dan script Tailwind ke base.html
+
+        style login, register, add product, edit product, delete product
+
+    2. Kustomisasi halaman daftar product menjadi lebih menarik dan responsive. Kemudian, perhatikan kondisi berikut:
+        1. Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
+            pada main.html 
+            <div class="w-32 h-32 mx-auto mb-4">
+            <img src="{% static 'image/no-product.png' %}" alt="No product available" class="w-full h-full object-contain">
+            </div>
+
+        2. Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card (tidak boleh sama persis dengan desain pada Tutorial!).
+            pada main.html
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for product in product_list %}
+                    {% include 'card_product.html' with product=product %}
+                {% endfor %}
+            </div>
+
+    3. Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
+    pada main.html
+        tambahkan button add and delete pada main/templates/card_product.html dan buat fungsi keduanya di views.py kemudian import serta tambahkan path di urls.py
+
+    4. Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+        buat navbar.html di subdirektori templates
+        
+        tautkan navbar ke main/templates/main.html
+
+        styling navbar
+        buat style yang berbeda untuk device yang berbeda
+
+3. **Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!**
+    1. Inline styles → style="color:red;" langsung di dalam elemen HTML. (paling kuat).
+    2. ID selector → #header { color: blue; }
+    3. Class, attribute, dan pseudo-class selector → .title {}, [type="text"] {}, :hover {}
+    4. Element (tag) dan pseudo-element selector → p {}, h1 {}, ::before {} (paling lemah).
+    5. Jika specificity sama → aturan yang ditulis terakhir (lebih bawah) di CSS yang dipakai.
+
+4. **Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!**
+    Responsive design = desain web yang menyesuaikan tampilan dengan berbagai ukuran layar (desktop, tablet, smartphone) agar pengalaman pengguna tetap nyaman.
+
+    Mengapa penting?
+    Saat ini mayoritas orang mengakses web lewat smartphone.
+    Membuat UI konsisten di berbagai perangkat.
+    Meningkatkan UX (User Experience) dan SEO (Google lebih suka website mobile-friendly).
+
+    Contoh:
+    Sudah menerapkan:
+    - Tokopedia / Shopee → tampil rapi di HP maupun PC, navigasi tetap mudah.
+    Belum menerapkan:
+    - Website lama universitas / instansi → tampilan pecah, teks terlalu kecil di HP, pengguna harus zoom in/out.
+
+5. **Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!**
+    Margin → memberi ruang di luar border.
+    Border → garis yang mengelilingi elemen.
+    Padding → memberi ruang di dalam border, antara konten dengan border.
+
+    div {
+        margin: 20px;      /* jarak antar elemen */
+        border: 2px solid black; /* garis */
+        padding: 10px;     /* jarak teks ke border */
+    }
+
+6. **Jelaskan konsep flex box dan grid layout beserta kegunaannya!**
+    - Flexbox (Flexible Box Layout)
+    Digunakan untuk menyusun elemen dalam 1 dimensi (baris atau kolom).
+    Fleksibel: elemen bisa otomatis menyesuaikan ruang kosong.
+    Berguna untuk: navbar, card yang sejajar, tombol yang rata.
+
+    - Grid Layout
+    Digunakan untuk menyusun elemen dalam 2 dimensi (baris & kolom).
+    Lebih cocok untuk layout kompleks seperti dashboard, template majalah, dsb.
+    Bisa mengatur area tertentu untuk elemen.
+
+7. **Melakukan add-commit-push ke GitHub.**
