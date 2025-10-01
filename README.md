@@ -350,17 +350,11 @@ Checklist untuk tugas ini adalah sebagai berikut:
     2. Kustomisasi halaman daftar product menjadi lebih menarik dan responsive. Kemudian, perhatikan kondisi berikut:
         1. Jika pada aplikasi belum ada product yang tersimpan, halaman daftar product akan menampilkan gambar dan pesan bahwa belum ada product yang terdaftar.
             pada main.html 
-            <div class="w-32 h-32 mx-auto mb-4">
-            <img src="{% static 'image/no-product.png' %}" alt="No product available" class="w-full h-full object-contain">
-            </div>
+            tambahkan if jika tidak ada produk dan image no product
 
         2. Jika sudah ada product yang tersimpan, halaman daftar product akan menampilkan detail setiap product dengan menggunakan card (tidak boleh sama persis dengan desain pada Tutorial!).
             pada main.html
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for product in product_list %}
-                    {% include 'card_product.html' with product=product %}
-                {% endfor %}
-            </div>
+            tampilkan card_product.html
 
     3. Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut!
     pada main.html
