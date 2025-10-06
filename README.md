@@ -184,9 +184,9 @@ sudah lengkap informasinya
 
     ubah create_product pada main/views.py bagian :
     if form.is_valid() and request.method == 'POST':
-            news_entry = form.save(commit = False)
-            news_entry.user = request.user
-            news_entry.save()
+            product_entry = form.save(commit = False)
+            product_entry.user = request.user
+            product_entry.save()
             return redirect('main:show_main')
 
     modifikasi fungsi show_main
@@ -412,3 +412,99 @@ Checklist untuk tugas ini adalah sebagai berikut:
     Bisa mengatur area tertentu untuk elemen.
 
 7. **Melakukan add-commit-push ke GitHub.**
+
+**Tugas 6**
+1. **Mengubah fitur - fitur tugas sebelumnya menggunakan AJAX**
+    1. **Fitur CRUD (Create Read Update Delete) product menggunakan AJAX (tidak boleh menggunakan dari context render kecuali untuk keperluan AJAX)**
+
+    2. **Mengubah Login dan Register menggunakan AJAX.**
+    
+2. **Update tampilan**
+    1. **Membuat tombol yang akan menampilkan modal untuk create dan update product dalam bentuk form.**
+
+    2. **Membuat modal konfirmasi saat pengguna ingin menghapus product**
+
+    3. **Saat melakukan aksi dari modal, product akan di-refresh tanpa perlu melakukan refresh halaman.**
+
+    4. **Membuat tombol refresh yang akan menampilkan list product terbaru tanpa perlu refresh halaman**
+
+    5. **Membuat Loading, Empty, dan Error state melalui Javascript.**
+
+    6. **Menampilkan Toast saat create, update, atau delete product dan saat login, logout, dan register (tidak boleh sama persis dengan tutorial).**
+
+3. **Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).**
+    1. **Apa perbedaan antara synchronous request dan asynchronous request?**
+        1. Synchronous Request
+        - Client (browser) mengirim request ke server.
+
+        - Browser menunggu respon server sebelum bisa melakukan hal lain.
+
+        - Selama menunggu, halaman bisa “freeze” atau reload penuh.
+
+        - Contoh: form submit biasa (<form> tanpa AJAX) → reload halaman setelah submit.
+
+        2. Asynchronous Request
+        - Client mengirim request ke server tanpa menghentikan aktivitas lain di browser.
+
+        - Browser tetap bisa dipakai (scrolling, klik tombol lain, dll) sembari menunggu respon.
+
+        - Contoh: AJAX → hanya sebagian halaman yang diperbarui tanpa reload penuh.
+
+    2. **Bagaimana AJAX bekerja di Django (alur request–response)?**
+        - Event di client (misalnya user klik tombol) memicu JavaScript (fetch / XMLHttpRequest / jQuery.ajax) untuk mengirim request.
+
+        - AJAX request ini dikirim ke URL Django (view function/class).
+
+        - Django memproses request (misalnya validasi form, query database).
+
+        - Django mengembalikan respon dalam format JSON atau HTML parsial, bukan full page.
+
+        - JavaScript di client menerima respon itu, lalu meng-update DOM (misalnya menambahkan data ke tabel, menampilkan notifikasi sukses, dll).
+
+        Contoh sederhana:
+        - URL: /check-username/
+
+        - Django View return JSON: {"exists": true}
+
+        - JavaScript terima JSON → tampilkan pesan "Username sudah dipakai".
+
+    3. **Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?**
+        - Tidak perlu reload halaman penuh → hemat bandwidth & lebih cepat.
+
+        - Responsif → hanya bagian tertentu dari halaman yang diperbarui.
+
+        - Interaktif → UX lebih baik, mirip aplikasi desktop.
+
+        - Efisiensi server → kirim data saja (JSON), bukan HTML penuh.
+
+    4. **Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?**
+        - Gunakan CSRF Token
+            - Django punya proteksi CSRF. Pastikan setiap AJAX POST request menyertakan CSRF token.
+
+            - Bisa ambil token dari template dengan {{ csrf_token }} lalu sertakan di header request.
+
+        - Gunakan HTTPS
+            - Untuk mencegah pencurian data (MITM attack).
+
+        - Validasi input di server
+            - Jangan hanya andalkan validasi di frontend. Django harus tetap cek username unik, password kuat, dsb.
+
+        - Rate limiting / Captcha
+            - Untuk cegah brute-force login/register.
+
+        - Jangan expose data sensitif di response
+            - Misalnya jangan return password hash ke client.
+
+    5. **Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?**
+        - Lebih cepat & mulus → pengguna tidak melihat reload page yang lama.
+
+        - Lebih interaktif → hasil langsung muncul (misalnya auto-suggest username).
+
+        - Seamless navigation → mirip aplikasi mobile/desktop.
+
+        - Namun, perlu hati-hati:
+            - Bisa membingungkan kalau URL tidak berubah (sulit di-bookmark/share).
+
+            - Bisa bikin error handling sulit (misalnya gagal koneksi, user tidak sadar).
+
+4. **Melakukan add-commit-push ke GitHub.**

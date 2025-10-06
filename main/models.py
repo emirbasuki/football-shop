@@ -7,6 +7,10 @@ class Product(models.Model):
         ('shoes', 'Shoes'),
         ('watch', 'Watch'),
         ('belt', 'Belt'),
+        ('shirt', 'Shirt'),
+        ('pants', 'Pants'),
+        ('bag', 'Bag'),
+        ('earphone', 'Earphone'),
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
@@ -15,6 +19,7 @@ class Product(models.Model):
     thumbnail = models.URLField()
     category = models.CharField(max_length=255, choices=CATEGORY_CHOICES, default='update')
     is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     stock = models.IntegerField(default=0)
     brand = models.CharField(max_length=100)
