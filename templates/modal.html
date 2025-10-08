@@ -19,6 +19,7 @@
     <!-- Modal body -->
     <div class="px-6 py-4 space-y-6 form-style">
       <form id="productForm">
+        <input type="hidden" id="editing_id" name="editing_id" value="">
         <div class="mb-4">
           <label for="name" class="block text-sm font-medium text-gray-700">Title</label>
           <input type="text" id="name" name="name" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Enter product name" required>
@@ -54,6 +55,22 @@
             <label for="is_featured" class="ml-2 text-sm font-medium text-gray-900">Featured Product</label>
           </div>
         </div>
+
+        <!-- NEW fields required by models.py -->
+        <div class="mb-4">
+          <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+          <input type="number" id="stock" name="stock" min="0" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="0">
+        </div>
+
+        <div class="mb-4">
+          <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
+          <input type="text" id="brand" name="brand" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Brand">
+        </div>
+
+        <div class="mb-4">
+          <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
+          <input type="text" id="size" name="size" class="mt-1 block w-24 border border-gray-300 rounded-md px-3 py-2" placeholder="M / L / 42">
+        </div>
       </form>
     </div>
     <!-- Modal footer -->
@@ -88,22 +105,65 @@
       }, 150); 
   }
 
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const c = cookies[i].trim();
+        if (c.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(c.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
   async function addProductEntry() {
-    await fetch("{% url 'main:add_product_entry_ajax' %}", {
-      method: "POST",
-      body: new FormData(document.querySelector('#productForm')),
-    })
-
+    const form = document.querySelector('#productForm');
+    const fd = new FormData(form);
+    const editingId = document.getElementById('editing_id').value || null;
+    const url = editingId ? `{% url 'main:edit_product_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', editingId) : "{% url 'main:add_product_entry_ajax' %}";
+    const method = "POST";
+    const res = await fetch(url, {
+      method,
+      headers: { 'X-CSRFToken': getCookie('csrftoken') },
+      body: fd,
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(()=>({}));
+      showToast('Error', (data.errors ? JSON.stringify(data.errors) : 'Failed'), 'error');
+      return false;
+    }
+    const data = await res.json().catch(()=>({}));
     document.getElementById("productForm").reset();
+    document.getElementById('editing_id').value = '';
     hideModal();
-      
-    // Show toast notification
-    showToast('Product added successfully!', '', 'success');
-
-    // Dispatch custom event to notify main.html about new data
-    document.dispatchEvent(new CustomEvent('productAdded'));
-
+    showToast(editingId ? 'Product updated' : 'Product added', '', 'success');
+    document.dispatchEvent(new CustomEvent('productAdded', {detail: data.product || null}));
     return false;
+  }
+  
+  // Open modal for editing: prefill form
+  async function openEditModal(id) {
+    try {
+      const url = `{% url 'main:show_json_by_id' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', id);
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+      if (!res.ok) throw new Error('Fetch failed');
+      const product = await res.json();
+      document.getElementById('name').value = product.name || '';
+      document.getElementById('price').value = product.price || '';
+      document.getElementById('description').value = product.description || '';
+      document.getElementById('category').value = product.category || '';
+      document.getElementById('thumbnail').value = product.thumbnail || '';
+      document.getElementById('is_featured').checked = !!product.is_featured;
+      document.getElementById('editing_id').value = product.id;
+      showModal();
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to load product', '', 'error');
+    }
   }
 
   document.getElementById("productForm").addEventListener("submit", function(e) {

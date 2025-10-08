@@ -416,21 +416,53 @@ Checklist untuk tugas ini adalah sebagai berikut:
 **Tugas 6**
 1. **Mengubah fitur - fitur tugas sebelumnya menggunakan AJAX**
     1. **Fitur CRUD (Create Read Update Delete) product menggunakan AJAX (tidak boleh menggunakan dari context render kecuali untuk keperluan AJAX)**
+        Endpoint di backend (main/views.py):
+        GET /main/json/ -> show_json (mengembalikan array produk JSON)
+        GET /main/json/<product_id>/ -> show_json_by_id (mengembalikan satu product)
+        POST /main/create-product-ajax -> add_product_entry_ajax (validasi via ProductForm, kembalikan JsonResponse)
+        POST /main/edit-product-ajax/<id>/ -> edit_product_ajax (cek kepemilikan, validasi ProductForm, JsonResponse)
+        POST /main/delete-product-ajax/<id>/ -> delete_product_ajax (cek kepemilikan, JsonResponse)
+        Validasi server: semua POST memakai ProductForm; jika invalid response JSON {'status':'error','errors':...}, status=400.
+        Keamanan: view create/edit/delete diberi @login_required dan edit/delete memeriksa product.user_id == request.user.id.
 
     2. **Mengubah Login dan Register menggunakan AJAX.**
-    
+        - Endpoint:
+        - POST /main/login-ajax/    -> login_ajax
+        - POST /main/register-ajax/ -> register_ajax
+        - Client: form intercept (e.preventDefault), kirim FormData via fetch dengan header X-CSRFToken. Tampilkan toast hasil (success/error) dan redirect setelah sukses.
+
 2. **Update tampilan**
     1. **Membuat tombol yang akan menampilkan modal untuk create dan update product dalam bentuk form.**
+        File: modal.html
+        Form id #productForm, hidden #editing_id dipakai untuk membedakan create / edit.
+        JS functions: showModal(), hideModal(), addProductEntry() — addProductEntry memilih URL create atau edit berdasarkan editing_id.
+        Prefill untuk edit: openEditModal(id) fetch /main/json/<id>/ lalu isi field form.
 
     2. **Membuat modal konfirmasi saat pengguna ingin menghapus product**
+        Implementasi konfirmasi non-blocking di static/js/toast.js: showConfirmToast(title, message, ...) mengembalikan Promise<boolean>.
+        Pemakaian di main: safeShowConfirm() memanggil showConfirmToast jika tersedia, fallback ke window.confirm.
+        Delete flow: deleteProductAjax(id) menunggu konfirmasi, lalu POST ke /main/delete-product-ajax/<id>/ dengan header 'X-CSRFToken'.
 
     3. **Saat melakukan aksi dari modal, product akan di-refresh tanpa perlu melakukan refresh halaman.**
+        Setelah create/update/delete sukses, kode mem-dispatch event productAdded:
+        document.dispatchEvent(new CustomEvent('productAdded', {detail:…}))
+        Listener di main.html menangkap event dan memanggil fetchProductFromServer() untuk reload list (AJAX) tanpa reload halaman browser.
 
     4. **Membuat tombol refresh yang akan menampilkan list product terbaru tanpa perlu refresh halaman**
+        Button id #refreshProducts di main.html memanggil fetchProductFromServer() untuk memuat list terbaru on-demand.
 
     5. **Membuat Loading, Empty, dan Error state melalui Javascript.**
+        #loading — animasi loading
+        #grid — product grid
+        #empty — empty state (gambar no-product.png + tombol Create)
+        #error — error area
+        Function displayPageSection({...}) (dan dipakai dalam fetchProductFromServer) mengatur visibilitas sesuai state (loading / error / empty / grid).
 
     6. **Menampilkan Toast saat create, update, atau delete product dan saat login, logout, dan register (tidak boleh sama persis dengan tutorial).**
+        Templates include toast.html and static/js/toast.js.
+        showToast(title, message, type) menampilkan notifikasi berbeda untuk success/error/warn.
+        showConfirmToast dipakai untuk konfirmasi hapus (UI konfirmasi berupa toast modal).
+        Login/register/create/update/delete memanggil showToast untuk memberi feedback ke user.
 
 3. **Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).**
     1. **Apa perbedaan antara synchronous request dan asynchronous request?**

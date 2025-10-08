@@ -8,11 +8,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required 
 import datetime
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -168,27 +171,70 @@ def delete_product(request, id):
     return HttpResponseRedirect(reverse('main:show_main'))
 
 # Create Ajax
-@csrf_exempt
+@login_required
 @require_POST
 def add_product_entry_ajax(request):
-    name = request.POST.get("name")
-    price = request.POST.get("price")
-    description = request.POST.get("description")
-    category = request.POST.get("category")
-    thumbnail = request.POST.get("thumbnail")
-    is_featured = request.POST.get("is_featured") == 'on'  # checkbox handling
-    user = request.user
+    form = ProductForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    product = form.save(commit=False)
+    product.user = request.user
+    product.save()
+    return JsonResponse({'status': 'success', 'product': {
+        'id': str(product.id),
+        'name': product.name,
+        'price': product.price,
+        'description': product.description,
+        'thumbnail': product.thumbnail,
+        'category': product.category,
+        'is_featured': product.is_featured,
+        'stock': product.stock,
+        'brand': product.brand,
+        'size': product.size,
+        'product_views': product.product_views,
+        'created_at': product.created_at.isoformat() if product.created_at else None,
+        'user_id': product.user_id,
+    }}, status=201)
 
-    new_product = Product( 
-        name=name, 
-        price=price,
-        description=description,
-        category=category,
-        thumbnail=thumbnail,
-        is_featured=is_featured,
-        user=user
-    )
-    new_product.save()
 
-    return HttpResponse(b"CREATED", status=201)
+@login_required
+@require_POST
+def edit_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id)
+    if product.user_id != request.user.id:
+        return HttpResponseForbidden(JsonResponse({'status': 'error', 'message': 'Not allowed'}))
+    form = ProductForm(request.POST, instance=product)
+    if not form.is_valid():
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    product = form.save()
+    return JsonResponse({'status': 'success', 'product': {'id': str(product.id), 'name': product.name, 'user_id': product.user_id}})
 
+
+@login_required
+@require_POST
+def delete_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id)
+    if product.user_id != request.user.id:
+        return HttpResponseForbidden(JsonResponse({'status': 'error', 'message': 'Not allowed'}))
+    product.delete()
+    return JsonResponse({'status': 'success', 'message': 'Deleted'})
+
+
+# AJAX login/register
+@require_POST
+def login_ajax(request):
+    form = AuthenticationForm(data=request.POST)
+    if form.is_valid():
+        user = form.get_user()
+        auth_login(request, user)
+        return JsonResponse({'status': 'success', 'message': 'Login successful'})
+    return JsonResponse({'status': 'error', 'errors': form.errors}, status=401)
+
+
+@require_POST
+def register_ajax(request):
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        user = form.save()
+        return JsonResponse({'status': 'success', 'message': 'Account created'})
+    return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)

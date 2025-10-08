@@ -33,7 +33,7 @@
         {% endif %}
 
         <!-- Form -->
-        <form method="POST" action="" class="space-y-5">
+        <form id="registerForm" method="POST" class="space-y-5">
           {% csrf_token %}
           
           <div>
@@ -62,6 +62,35 @@
             Create Account
           </button>
         </form>
+
+        <script>
+          function getCookie(name){
+            let cookieValue=null;
+            if(document.cookie && document.cookie!==''){
+              const cookies=document.cookie.split(';');
+              for(let c of cookies){
+                c=c.trim();
+                if(c.startsWith(name+'=')){
+                  cookieValue=decodeURIComponent(c.substring(name.length+1));
+                  break;
+                }
+              }
+            } 
+            return cookieValue;
+          }
+          document.getElementById('registerForm').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const fd = new FormData(this);
+            const res = await fetch("{% url 'main:register_ajax' %}", { method:'POST', headers:{ 'X-CSRFToken': getCookie('csrftoken') }, body: fd });
+            const data = await res.json().catch(()=>({}));
+            if (res.ok && data.status === 'success') {
+              showToast('Account created', '', 'success');
+              setTimeout(()=> location.href = "{% url 'main:login' %}", 700);
+            } else {
+              showToast('Register failed', (data.errors ? JSON.stringify(data.errors) : data.message || 'Failed'), 'error');
+            }
+          });
+        </script>
 
         <!-- Messages -->
         {% if messages %}
@@ -94,23 +123,4 @@
     </div>
   </div>
 </div>
-
-<script>
-document.querySelector('form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const res = await fetch("{% url 'main:register_ajax' %}", {
-    method: "POST",
-    body: new FormData(this)
-  });
-  const data = await res.json();
-  if (res.ok && data.success) {
-    showToast('Account created', '', 'success');
-    window.location.href = data.redirect;
-  } else {
-    console.error(data);
-    showToast('Register failed', JSON.stringify(data.errors || data), 'error');
-  }
-});
-</script>
-
 {% endblock content %}
