@@ -16,6 +16,10 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
+import requests
+
+from django.utils.html import strip_tags
+import json
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -238,3 +242,87 @@ def register_ajax(request):
         user = form.save()
         return JsonResponse({'status': 'success', 'message': 'Account created'})
     return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        price = data.get("price", "")
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        new_product = Product(
+            name=name, 
+            price=price,
+            description=description,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+
+@csrf_exempt
+def get_user(request):
+    """Get current user profile and their products"""
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": False,
+            "message": "User not authenticated"
+        }, status=401)
+    
+    user = request.user
+    user_products = Product.objects.filter(user=user)
+    
+    products_data = [
+        {
+            'id': str(product.id),
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'is_featured': product.is_featured,
+            'created_at': product.created_at.isoformat() if product.created_at else None,
+            'stock': product.stock,
+            'brand': product.brand,
+            'size': product.size,
+            'product_views': product.product_views,
+            'user_id': product.user_id,
+        }
+        for product in user_products
+    ]
+    
+    return JsonResponse({
+        "status": True,
+        "username": user.username,
+        "user_id": user.id,
+        "email": user.email,
+        "products": products_data
+    }, status=200)
