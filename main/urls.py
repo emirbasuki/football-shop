@@ -21,8 +21,7 @@ urlpatterns = [
     path('delete_product_ajax/<uuid:id>/', delete_product_ajax, name='delete_product_ajax'),
     path('login_ajax/', login_ajax, name='login_ajax'),
     path('register_ajax/', register_ajax, name='register_ajax'),
-    path('proxy_image/', proxy_image, name='proxy_image'),
-    path('proxy-image/', proxy_image, name='proxy_image_dash'),  # Backward compatibility
-    path('create_flutter/', create_product_flutter, name='create_product_flutter'),
+    path('proxy-image/', proxy_image, name='proxy_image'),
+    path('create-flutter/', create_product_flutter, name='create_product_flutter'),
     path('get_user/', get_user, name='get_user'),
 ]
